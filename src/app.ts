@@ -8,6 +8,7 @@ import Container from "typedi";
 import { errorHandler, notFoundHandler } from "./common/middleware/error-handler.middleware";
 import { authenticate } from "./common/middleware/authenticate.middleware";
 import { requireRole } from "./common/middleware/authorize.middleware";
+import { UserRoutes } from "./domains/users/route/user.route";
 dotenv.config();
 
 class Application {
@@ -49,8 +50,8 @@ class Application {
       return res.json(success(null, "Server is running"));
     });
 
-    // const exampleRoutes = Container.get(ExampleRoutes)
-    // this.app.use("/api/example", exampleRoutes.getRoutes())
+    const userRoutes = Container.get(UserRoutes)
+    this.app.use("/api/users", userRoutes.getRoutes())
     this.app.use(notFoundHandler);
     this.app.use(errorHandler);
   }
