@@ -3,7 +3,7 @@ import { Service } from "typedi";
 import { UserController } from "../controller/user.controller";
 import { registerSchema, loginSchema } from "../validator/user.validator";
 import { asyncHandler } from "../../../common/utils/async-handler";
-import { validate } from "../../../common/middleware/validate.middleware";
+import { validate, validateLogin } from "../../../common/middleware/validate.middleware";
 
 @Service()
 export class UserRoutes {
@@ -29,7 +29,7 @@ export class UserRoutes {
 
         this.router.post(
             "/login",
-            validate(loginSchema),
+            validateLogin(loginSchema),
             asyncHandler(this.controller.login.bind(this.controller))
         );
     }

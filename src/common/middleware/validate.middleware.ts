@@ -23,8 +23,8 @@ import { AuthErrorMessages } from "../constants/auth-error-messages.constants";
 export const validate = (schema: ObjectSchema) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const { error, value } = schema.validate(req.body, {
-      abortEarly: false, 
-      stripUnknown: true, 
+      abortEarly: false,
+      stripUnknown: true,
     });
 
     if (error) {
@@ -68,6 +68,34 @@ export const validateLogin = (schema: ObjectSchema) => {
     }
 
     req.body = value;
+    next();
+  };
+};
+
+export const validateQuery = (schema: ObjectSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const { error, value } = schema.validate(req.query, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      res.status(400).json({
+        status: 400,
+        message: "Validation failed",
+        errors: error.details.map(d => ({ field: d.path.join("."), message: d.message })),
+        error: "Bad Request",
+      });
+      return;
+    }
+
+    Object.defineProperty(req, 'query', {
+      value: value,
+      writable: true,
+      enumerable: true,
+      configurable: true
+    });
+
     next();
   };
 };
