@@ -10,6 +10,9 @@ import { UserRoutes } from "./domains/users/route/user.route";
 import { QuestionRoutes } from "./domains/questions/route/question.route";
 import { QuizRoutes } from "./domains/quizzes/route/quiz.route";
 import { AttemptRoutes } from "./domains/attempts/route/attempt.route";
+import { QuestionGroupRoutes } from "./domains/question-groups/route/question-group.route";
+import { QuestionOptionRoutes } from "./domains/question-options/route/question-option.route";
+import { AttemptAnswerRoutes } from "./domains/attempt-answers/route/attempt-answer.route";
 dotenv.config();
 
 class Application {
@@ -55,11 +58,17 @@ class Application {
     const questionRoutes = Container.get(QuestionRoutes)
     const quizRoutes = Container.get(QuizRoutes)
     const attemptRoutes = Container.get(AttemptRoutes)
+    const questionGroupRoutes = Container.get(QuestionGroupRoutes)
+    const questionOptionRoutes = Container.get(QuestionOptionRoutes)
+    const attemptAnswerRoutes  =  Container.get(AttemptAnswerRoutes)
 
     this.app.use("/api/users", userRoutes.getRoutes())
     this.app.use("/api/questions", questionRoutes.getRoutes())
     this.app.use("/api/quizzes", quizRoutes.getRoutes())
     this.app.use("/api/attempts", attemptRoutes.getRoutes())
+    this.app.use("/api/question-groups", questionGroupRoutes.getRoutes());
+    this.app.use("/api/question-options", questionOptionRoutes.getRoutes());
+    this.app.use("/api/attempt-answers",attemptAnswerRoutes.getRoutes());
 
     this.app.use(notFoundHandler);
     this.app.use(errorHandler);

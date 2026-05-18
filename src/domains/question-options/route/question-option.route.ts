@@ -7,7 +7,7 @@ import { authenticate } from "../../../common/middleware/authenticate.middleware
 import { QuestionOptionController } from "../controller/question-option.controller";
 
 @Service()
-export class QuestionGroupRoutes {
+export class QuestionOptionRoutes {
     public router: Router;
     constructor(private readonly controller: QuestionOptionController) {
         this.router = Router();
