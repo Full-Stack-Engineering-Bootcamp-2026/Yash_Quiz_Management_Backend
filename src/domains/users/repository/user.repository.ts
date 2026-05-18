@@ -19,4 +19,16 @@ export class UserRepository {
         const newUser = this.userRepo.create(user);
         return await this.userRepo.save(newUser);
     }
+
+    public async findById(userId: number): Promise<User | null> {
+        return await this.userRepo.findOne({
+            where: { id: userId }
+        });
+    }
+
+    public async findByUid(userUid: string): Promise<User | null> {
+        return await this.userRepo.findOne({
+            where: { uid: userUid }
+        });
+    }
 }
