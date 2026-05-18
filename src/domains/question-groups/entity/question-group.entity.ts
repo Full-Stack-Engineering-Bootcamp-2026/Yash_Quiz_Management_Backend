@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { Question } from '../../questions/entity/question.entity';
 
 
@@ -12,4 +12,7 @@ export class QuestionGroup {
 
     @OneToMany(() => Question, question => question.group)
     questions: Question[];
+
+    @CreateDateColumn()
+    createdAt: Date;
 }
