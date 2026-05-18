@@ -29,7 +29,7 @@ export class QuestionRoutes {
             "/",
             authenticate,
             requireRole(UserRole.ADMIN),
-            validateQuery(getQuestionsFilterSchema), // Validates req.query
+            validateQuery(getQuestionsFilterSchema),
             asyncHandler(this.controller.getAll.bind(this.controller))
         );
 

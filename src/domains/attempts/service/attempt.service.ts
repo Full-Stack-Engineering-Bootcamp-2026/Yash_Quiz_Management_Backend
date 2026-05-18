@@ -4,10 +4,14 @@ import { CreateAttemptDTO, GetAttemptsFilterDTO, PaginatedResponse, AttemptRespo
 import { Attempt } from "../entity/attempt.entity";
 import { NotFoundException, BadRequestException } from "../../../common/exceptions";
 import { AttemptAnswer } from "../../attempt-answers/entity/attempt-answer.entity";
+import { UserRepository } from "../../users/repository/user.repository";
 
 @Service()
 export class AttemptService {
-  constructor(private readonly attemptRepository: AttemptRepository) {}
+  constructor(
+    private readonly attemptRepository: AttemptRepository,
+    private readonly userRepository: UserRepository
+  ) { }
 
   private mapToResponse(attempt: Attempt): AttemptResponseDTO {
     return {
@@ -35,7 +39,7 @@ export class AttemptService {
       if (!question) throw new BadRequestException(`Invalid question UID: ${answerData.questionUid}`);
 
       const answerRecord: Partial<AttemptAnswer> = {
-        questionId: question.id,
+        question: question,
         textResponse: answerData.textResponse,
       };
 
@@ -51,19 +55,21 @@ export class AttemptService {
     }
 
     const savedAttempt = await this.attemptRepository.saveAttempt({
-      userId: userId,
-      quizId: quiz.id,
+      user: { id: userId } as any,
+      quiz: quiz,
       answers: attemptAnswers as AttemptAnswer[]
     });
-    
+
+    const user = await this.userRepository.findById(userId);
+
     savedAttempt.quiz = quiz;
-    savedAttempt.user = { uid: "user-uid-placeholder" } as any;
+    savedAttempt.user = { uid: user!.uid } as any;
 
     return this.mapToResponse(savedAttempt);
   }
 
   public async getAttempts(
-    filters: GetAttemptsFilterDTO, 
+    filters: GetAttemptsFilterDTO,
     requestingUserId?: number
   ): Promise<PaginatedResponse<AttemptResponseDTO>> {
     const page = Number(filters.page) || 1;
