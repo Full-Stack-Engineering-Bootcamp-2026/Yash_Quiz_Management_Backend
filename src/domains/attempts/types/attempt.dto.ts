@@ -41,3 +41,23 @@ export interface PaginatedResponse<T> {
     totalPages: number;
   };
 }
+export interface AttemptDetailResponseDTO {
+  uid: string;
+  quizUid: string;
+  createdAt: Date;
+  answers: {
+    uid: string;
+    textResponse?: string;
+    selectedOptionUids?: string[];
+    question: {
+      uid: string;
+      text: string;
+      type: "radio" | "checkbox" | "textarea";
+      version: number;
+      options?: {
+        uid: string;
+        text: string;
+      }[];
+    };
+  }[];
+}

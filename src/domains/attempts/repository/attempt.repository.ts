@@ -72,4 +72,18 @@ export class AttemptRepository {
 
         return await qb.getManyAndCount();
     }
+
+    public async findAttemptWithFullDetails(uid: string): Promise<Attempt | null> {
+        return await this.attemptRepo.findOne({
+            where: { uid },
+            relations: [
+                "user",
+                "quiz",
+                "answers",
+                "answers.question",
+                "answers.question.options",
+                "answers.selectedOptions"
+            ]
+        });
+    }
 }

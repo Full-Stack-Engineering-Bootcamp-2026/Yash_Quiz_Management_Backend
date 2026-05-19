@@ -36,4 +36,14 @@ export class AttemptController {
             success(paginatedResult, "Attempt history retrieved successfully")
         );
     }
+
+    public async getOne(req: AuthRequest, res: Response): Promise<void> {
+        const attemptUid = req.params.uid as string;
+        const userId = req.user!.userId;
+        const role = req.user!.role;
+
+        const attemptDetails = await this.attemptService.getAttemptDetails(attemptUid, userId, role);
+
+        res.status(HttpStatus.OK).json(success(attemptDetails, "Attempt details retrieved successfully"));
+    }
 }

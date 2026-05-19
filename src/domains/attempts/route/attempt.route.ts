@@ -40,5 +40,11 @@ export class AttemptRoutes {
             validateQuery(getAttemptsFilterSchema),
             asyncHandler(this.controller.getHistory.bind(this.controller))
         );
+
+        this.router.get(
+            "/:uid",
+            authenticate,
+            asyncHandler(this.controller.getOne.bind(this.controller))
+        );
     }
 }

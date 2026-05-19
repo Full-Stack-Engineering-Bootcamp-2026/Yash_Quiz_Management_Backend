@@ -1,10 +1,11 @@
 import { Service } from "typedi";
 import { AttemptRepository } from "../repository/attempt.repository";
-import { CreateAttemptDTO, GetAttemptsFilterDTO, PaginatedResponse, AttemptResponseDTO } from "../types/attempt.dto";
+import { CreateAttemptDTO, GetAttemptsFilterDTO, PaginatedResponse, AttemptResponseDTO, AttemptDetailResponseDTO } from "../types/attempt.dto";
 import { Attempt } from "../entity/attempt.entity";
-import { NotFoundException, BadRequestException } from "../../../common/exceptions";
+import { NotFoundException, BadRequestException, UnauthorizedException } from "../../../common/exceptions";
 import { AttemptAnswer } from "../../attempt-answers/entity/attempt-answer.entity";
 import { UserRepository } from "../../users/repository/user.repository";
+import { UserRole } from "../../users/entity/user.entity";
 
 @Service()
 export class AttemptService {
@@ -86,6 +87,39 @@ export class AttemptService {
         limit,
         totalPages: Math.ceil(total / limit)
       }
+    };
+  }
+
+  public async getAttemptDetails(uid: string, requestingUserId: number, requestingUserRole: UserRole): Promise<AttemptDetailResponseDTO> {
+    const attempt = await this.attemptRepository.findAttemptWithFullDetails(uid);
+
+    if (!attempt) {
+      throw new NotFoundException("Attempt not found");
+    }
+
+    if (requestingUserRole === UserRole.USER && attempt.user.id !== requestingUserId) {
+      throw new UnauthorizedException("You do not have permission to view this attempt");
+    }
+
+    return {
+      uid: attempt.uid,
+      quizUid: attempt.quiz.uid,
+      createdAt: attempt.createdAt,
+      answers: attempt.answers.map(ans => ({
+        uid: ans.uid,
+        textResponse: ans.textResponse,
+        selectedOptionUids: ans.selectedOptions?.map(opt => opt.uid) || [],
+        question: {
+          uid: ans.question.uid,
+          text: ans.question.text,
+          type: ans.question.type as "radio" | "checkbox" | "textarea",
+          version: ans.question.version,
+          options: ans.question.options?.map(opt => ({
+            uid: opt.uid,
+            text: opt.text
+          }))
+        }
+      }))
     };
   }
 }
